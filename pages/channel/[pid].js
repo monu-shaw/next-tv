@@ -5,9 +5,12 @@ import ReactPlayer from 'react-player';
 import styles from '../../styles/Home.module.css';
 import Link from 'next/link';
 import { AppContext } from '../_app';
+import Head from 'next/head';
+import Image from 'next/image';
 const Channel = () => {
+  const [dom ,setDom] = useState(false);
   const [playing, setPlaying] = useState(true);
-  const [control, setControl] = useState(false);
+  const [control, setControl] = useState(true);
   const [source, setSource] = useState('');
   const [quality, setQuality] = useState('low');
   const [option, setOption] = useState(false);
@@ -16,9 +19,26 @@ const Channel = () => {
   const [ch, setCh] = useState([]);
   const playerRef = useRef(null);
 
-  const channel = useContext(AppContext);
+  const {state} = useContext(AppContext);
   const { pid } = useRouter().query;
 
+  function setCurrentPlay(x){
+    const data = state.filter((r) => r.id == x);
+    setCh(data);
+    setSource(data[0]?.quality.low);
+  }
+
+  function fadeControl(func, delay) {
+    let debounceTimer = null
+    setControl(true);
+    setPlaying(!playing);
+    return function() {
+        const context = this
+        const args = arguments
+            clearTimeout(debounceTimer)
+                debounceTimer = setTimeout(function(){func.apply(context, args)}, delay)
+    }
+} 
   const speedControl = (x) => {
     if (x) {
       if (speed < 2.5) {
@@ -31,11 +51,14 @@ const Channel = () => {
     }
   };
   useEffect(() => {
-    const data = channel.state.channel.filter((r) => r.id == pid);
+    setDom(true)
+    const data = state.filter((r) => r.id == pid);
     setCh(data);
     setSource(data[0]?.quality.low);
-    setFullscreen(fullscreen)
-  }, []);
+    setFullscreen(fullscreen);
+    //fetch('/api/getchannel').then(r=>r.json()).then(r=>console.log(r))
+    
+  }, [state]);
   useEffect(() => {
     function toggleFullscreen() {
       if (fullscreen) {
@@ -52,6 +75,22 @@ const Channel = () => {
     }
     toggleFullscreen();
   }, [fullscreen]);
+  useEffect(() => {
+    function toggleFullscreen() {
+      if (fullscreen) {
+        playerRef.current.requestFullscreen();
+      } else {
+        if (document.fullscreenElement) {
+          document
+            .exitFullscreen()
+            .then(() => {})
+            .catch((err) => console.error(err));
+        } 
+        
+      }
+    }
+    toggleFullscreen();
+  }, [control]);
 
   
   const qManage = (x) => {
@@ -70,97 +109,120 @@ const Channel = () => {
         break;
     }
   }
-
-  return (
-    <div className="styles.grid dark:bg-zinc-900 dark:text-slate min-h-screen ">
-      <h6 className={`${styles.title} text-sm mb-3 `}>
-        <Link href="/">{ch[0]?.name}</Link>
-      </h6>
-      <div
-        ref={playerRef}
-        className="mx-auto w-3/4 md:w-1/2 rounded-2xl overflow-hidden bg-slate-900 bg-blend-overlay shadow-2xl relative transition ease-in-out duration-300"
-      >
-        <ReactPlayer
-          url={source}
-          className="rounded-2xl"
-          width="100%"
-          height="100%"
-          playing={playing}
-          playbackRate={speed}
-          onClick={() => setPlaying(!playing)}
-        />
-        <div className="control">
-          <button
-            className="transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300 absolute left-2 bottom-2 rounded-2xl p-1  px-2"
-            onClick={() => setPlaying(!playing)}
-          >
-            {playing ? (
-              <i className="bi bi-pause-fill"></i>
-            ) : (
-              <i className="bi bi-play-fill"></i>
-            )}
-          </button>
-          <button
-            className="transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300 absolute right-12 bottom-2 rounded-2xl p-1  px-2"
-            onClick={() => setOption(!option)}
-          >
-            {option ? (
-              <i className="bi bi-gear-fill"></i>
-            ) : (
-              <i className="bi bi-gear"></i>
-            )}
-          </button>
-          <button
-            className="transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300 absolute right-2 bottom-2 rounded-2xl p-1  px-2"
-            onClick={() => setFullscreen(!fullscreen)}
-          >
-            {fullscreen ? (
-              <i className="bi bi-fullscreen-exit"></i>
-            ) : (
-              <i className="bi bi-fullscreen"></i>
-            )}
-          </button>
-          <div
-            className={`grid absolute right-2 top-2 modal p-2 rounded-2xl backdrop-blur-xl bg-white/30 ${
-              !option ? 'hidden' : ''
-            }`}
-          >
-            <div id="spdCntrl" className="grid grid-cols-3  content-between">
-              <div className="justify-self-center" onClick={() => speedControl(1)}>
-                +
-              </div>
-              <div className="justify-self-center">{speed}</div>
-              <div className="justify-self-center" onClick={() => speedControl(0)}>
-                -
-              </div>
-            </div>
-            <div className="grid">
-              <div id="qltCntrl" className="grid grid-cols-3 gap-3">
-                <div
-                  className={quality == 'low' ? 'backdrop-blur-sm p-1 rounded-md' : ''}
-                  onClick={() => qManage('low')}
-                >
-                  Low
+if(!dom){
+  return (<>Loading</>)
+}
+else{return (
+    <div className="dark:bg-zinc-900 dark:text-slate min-h-screen ">
+      <Head>
+        <title>{ch[0]?.name+ ` on OurTv`}</title>
+      </Head>
+      <div className='max-h-full'>
+        <h6 className={`text-center capitalize text-3xl text-sky-600`}>
+          <Link href="/"><i className="bi bi-house"></i> {ch[0]?.name}</Link>
+        </h6>
+        <div
+          onClick={() => 
+            fadeControl(function(){
+              setControl(false);
+              console.log('r');
+            },5000)()}
+          ref={playerRef}
+          className={`${styles.rp} my-2 mx-auto w-4/4 md:w-1/2 rounded-lg overflow-hidden bg-slate-900 bg-blend-overlay shadow-2xl relative transition ease-in-out duration-3000`}
+        >
+          <ReactPlayer
+            url={source}
+            className="rounded-2xl"
+            width="100%"
+            height="100%"
+            playing={playing}
+            playbackRate={speed}
+            
+          />
+          <div className={`${control?'':'hidden'}`}>
+            <button
+              className="transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300 absolute left-2 bottom-2 rounded-2xl p-1  px-2"
+              onClick={() => setPlaying(!playing)}
+            >
+              {playing ? (
+                <i className="bi bi-pause-fill"></i>
+              ) : (
+                <i className="bi bi-play-fill"></i>
+              )}
+            </button>
+            <button
+              className="transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300 absolute right-12 bottom-2 rounded-2xl p-1  px-2"
+              onClick={() => setOption(!option)}
+            >
+              {option ? (
+                <i className="bi bi-gear-fill"></i>
+              ) : (
+                <i className="bi bi-gear"></i>
+              )}
+            </button>
+            <button
+              className="transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300 absolute right-2 bottom-2 rounded-2xl p-1  px-2"
+              onClick={() => setFullscreen(!fullscreen)}
+            >
+              {fullscreen ? (
+                <i className="bi bi-fullscreen-exit"></i>
+              ) : (
+                <i className="bi bi-fullscreen"></i>
+              )}
+            </button>
+            <div
+              className={`grid absolute right-2 top-2 modal p-2 rounded-2xl backdrop-blur-xl bg-white/30 ${
+                !option ? 'hidden' : ''
+              }`}
+            >
+              <div id="spdCntrl" className="grid grid-cols-3  content-between">
+                <div className="justify-self-center" onClick={() => speedControl(1)}>
+                  +
                 </div>
-                <div
-                  className={quality == 'mid' ? 'backdrop-blur-sm p-1 rounded-md' : ''}
-                  onClick={() => qManage('mid')}
-                >
-                  Mid
+                <div className="justify-self-center">{speed}</div>
+                <div className="justify-self-center" onClick={() => speedControl(0)}>
+                  -
                 </div>
-                <div
-                  className={quality == 'high' ? 'backdrop-blur-sm p-1 rounded-md' : ''}
-                  onClick={() => qManage('high')}
-                >
-                  High
+              </div>
+              <div className="grid">
+                <div id="qltCntrl" className="grid grid-cols-3 gap-3">
+                  <div
+                    className={quality == 'low' ? 'backdrop-blur-sm px-1 rounded-md' : ''}
+                    onClick={() => qManage('low')}
+                  >
+                    Low
+                  </div>
+                  <div
+                    className={quality == 'mid' ? 'backdrop-blur-sm px-1 rounded-md' : ''}
+                    onClick={() => qManage('mid')}
+                  >
+                    Mid
+                  </div>
+                  <div
+                    className={quality == 'high' ? 'backdrop-blur-sm px-1 rounded-md' : ''}
+                    onClick={() => qManage('high')}
+                  >
+                    High
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <div className='flex w-full mt-8 gap-8 overflow-hidden overflow-x-auto snap-x'>
+        {state.filter(r=>r.category==ch[0]?.category).map((r)=>
+        <div key={r.id} className={`min-w-max snap-center`} onClick={()=>setCurrentPlay(r.id)}>
+          <div className='w-full'>
+              <Image src="/images.png" className='w-4/5 mx-auto' width="80" height="100" alt={r.name}/>
+          </div>
+          <h6 className="text-sm capitalize">{r.name.substr(0, 10)} &rarr;</h6>
+          <p>Learn about Next.js in an ..</p>
+        </div>)}
+      </div>
     </div>
-  );
+  );}
 };
 
 export default Channel;

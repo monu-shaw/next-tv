@@ -5,13 +5,19 @@ const supabase = createClient(
   process.env.clientID,
   process.env.clientKEY
 );
+
 export default (req, res) => {
+  
   try {
     supabase
       .from('channel')
       .select('*')
-      .then((re) => res.status(200).json(re.data));
+      .then((re) => {
+       return res.status(200).json(re.data)
+      }).catch((err)=>{
+        return res.status(500).json({ err: err });
+      });
   } catch (err) {
-    res.status(500).json({ err: err });
+    return res.status(500).json({ err: err });
   }
 };

@@ -1,12 +1,9 @@
 import react from 'react';
 import { useState, useEffect } from 'react';
 import '../styles/globals.css';
-import Search from './components/search';
 
 function MyApp({ Component, pageProps }) {
   const [channel, setChannel] = useState([]);
-  const [defChannel, setDefChannel] = useState([]);
-  const [display, setDisplay] = useState(false);
   const getChannel = (url) => {
     return fetch(url)
       .then((res) => res.json())
@@ -17,7 +14,7 @@ function MyApp({ Component, pageProps }) {
     if (channel.length == 0) {
       getChannel('/api/getchannel').then((res) => {
         setChannel(res)
-        setDefChannel(res)
+        //console.log(res);
       });
     }
   }, []);
@@ -26,13 +23,10 @@ function MyApp({ Component, pageProps }) {
   return (
     <AppContext.Provider
       value={{
-        state: {
-          channel: channel,
-        },
+        state:  channel,
       }}
     > 
-    <Search display={display} setDisplay={setDisplay} channel={channel} setChannel={setChannel} defChannel={defChannel} />
-      <Component {...pageProps} className={``}/>
+      <Component {...pageProps}/>
       
     </AppContext.Provider>
   );
