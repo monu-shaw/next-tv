@@ -7,13 +7,16 @@ const supabase = createClient(
 );
 
 export default (req, res) => {
+  
   if(req.method== 'POST'){
     const {email , password} = req.body
   try {
     supabase.auth.signInWithPassword({email,password})
     .then((re) => {
         if(re.error == null){
-         return res.status(200).json(re.data)
+         return res.status(200).json(re)
+        }else{
+          return res.status(400).json(re)
         }
       }).catch((err)=>{
         return res.status(500).json({ err: err });
@@ -26,9 +29,8 @@ export default (req, res) => {
         try {
             supabase.auth.getSession()
             .then((re) => {
-                return res.status(200).json(re)
                 if(re.error == null){
-                 return res.status(200).json(re.data)
+                 return res.status(200).json(re.data.session)
                 }
               }).catch((err)=>{
                 return res.status(500).json({ err: err });

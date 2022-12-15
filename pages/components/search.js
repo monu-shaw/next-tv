@@ -60,7 +60,7 @@ function Search(props) {
       <option value="1">language</option>
         {languages.map((r,i)=> <option key={`${i}+a`} value={r} className='capitalize px-2'>{r}</option>)}
       </select>
-      <select className='capitalize px-2 bg-transparent/10' onChange={(e)=>(e.target.value)}>
+      <select className='capitalize px-2 bg-transparent/10' onChange={(e)=>setGenre(e.target.value)}>
       <option value="1">Genre</option>
         {categories.map((r,i)=> <option key={i+'b'} value={r} className='capitalize px-2'>{r}</option>)}
       </select>

@@ -1,23 +1,43 @@
+import { createClient } from '@supabase/supabase-js';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react'
+import supabase from '../components/supabase';
+
 
 function SignIn() {
   const router = useRouter()
   useEffect(()=>{
-    fetch('/api/login?auth').then(r=>r.json())
-    .then(r=>{
-      if(r.error == null){
-        router.push('home');
-      }
-    })
+    supabase.auth.getSession()
+            .then((re) => {
+                if(re.data.session != null){
+                  router.push('home');
+                }
+              }).catch((err)=>{
+                //return res.status(500).json({ err: err });
+                console.log(err);
+              });
   },[])
   const handelSubmit=(e)=>{
     e.preventDefault()
     
     const f=()=> e.target;
-    //console.log(f(email));
-    axios.post('/api/login', {email: f().email.value, password: f().password.value}).then(r=>console.log(r.data))
+    const password = f().password.value
+    const email = f().email.value
+    
+    supabase.auth.signInWithPassword({ email, password})
+    .then((re) => {
+        if(re.error == null){
+         //return res.status(200).json(re)
+         console.log(re);
+        }else{
+          //return res.status(400).json(re)
+          console.log(re);
+        }
+      }).catch((err)=>{
+        //return res.status(500).json({ err: err });
+        console.log(err);
+      });
   }
   return (
     <div className='flex justify-center min-h-screen items-center'>

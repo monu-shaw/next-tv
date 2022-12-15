@@ -1,17 +1,21 @@
+import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useState } from 'react'
+import supabase from '../components/supabase';
 import { AppContext } from '../_app';
 
 function Home() {
+    const router = useRouter()
     const [id,setId]=useState(null);
     const {state} = useContext(AppContext)
     useEffect(() => {
-        fetch('/api/login?auth').then(r=>r.json())
-        .then(r=>{
-          if(r.error != null){
-            router.push('signin');
-          }
-        })
-      
+        supabase.auth.getSession()
+            .then((re) => {
+                if(re.data.session == null){
+                  router.push('signin');
+                }
+              }).catch((err)=>{
+                console.log(err);
+              });
     }, [state])
     
   return (
@@ -89,8 +93,6 @@ function UpdateModal({p}){
 
     const HandelSubmit=(e)=>{
         e.preventDefault();
-        //console.log(e.target.name);
-        console.log(user);
             fetch('/api/updatechannel',{
                 method:'POST',
                 body:JSON.stringify(user)
@@ -101,19 +103,29 @@ function UpdateModal({p}){
         setUser({...user, [e.target.name]:e.target.value})
     }
     useEffect(()=>{
-        setUser(state.filter(r=>r.id==p)[0]);
+        const t= state.filter(r=>r.id==p)[0];
+        setUser({
+            name : t?.name,
+            imgUrl : t?.imgUrl,
+            low : t?.quality?.low ,
+            mid : t?.quality?.mid,
+            high : t?.quality?.high ,
+            hd : t?.quality?.hd ,
+            language : t?.language ,
+            category : t?.category ,
+            id:t?.id 
+        })
     },[state,p])
-    
     return(
         <form onSubmit={HandelSubmit} className="col-8 flex flex-col gap-4 w-4/5 mx-auto p-4">
-            <input name="name" className='form-control my-1' type="text" onChange={HandelChange} placeholder='name'/>
-            <input name="imgUrl" className='form-control my-1' type="text" onChange={HandelChange} placeholder='imgUrl'/>
-            <input name="low" className='form-control my-1' type="text" onChange={HandelChange} placeholder='low'/>
-            <input name="mid" className='form-control my-1' type="text" onChange={HandelChange} placeholder='mid'/>
-            <input name="high" className='form-control my-1' type="text" onChange={HandelChange} placeholder='high'/>
-            <input name="hd" className='form-control my-1' type="text" onChange={HandelChange} placeholder='hd'/>
-            <input name="language" className='form-control my-1' type="text" onChange={HandelChange} placeholder='language'/>
-            <input name="category" className='form-control my-1' type="text" onChange={HandelChange} placeholder='category'/>
+            <input name="name" className='form-control my-1' type="text" onChange={HandelChange} placeholder='name' value={user?.name}/>
+            <input name="imgUrl" className='form-control my-1' type="text" onChange={HandelChange} placeholder='imgUrl' value={user?.imgUrl}/>
+            <input name="low" className='form-control my-1' type="text" onChange={HandelChange} placeholder='low' value={user?.low}/>
+            <input name="mid" className='form-control my-1' type="text" onChange={HandelChange} placeholder='mid'value={user?.mid}/>
+            <input name="high" className='form-control my-1' type="text" onChange={HandelChange} placeholder='high' value={user?.high}/>
+            <input name="hd" className='form-control my-1' type="text" onChange={HandelChange} placeholder='hd' value={user?.hd}/>
+            <input name="language" className='form-control my-1' type="text" onChange={HandelChange} placeholder='language' value={user?.language}/>
+            <input name="category" className='form-control my-1' type="text" onChange={HandelChange} placeholder='category'value={user?.category}/>
             <button type={'submit'} className="btn btn-dark">Add</button>
         </form>
     )
