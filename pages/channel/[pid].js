@@ -64,9 +64,13 @@ const Channel = () => {
     }
     toggleFullscreen();
   }, [fullscreen]);
+  let t 
   useEffect(() => {
-      setTimeout(()=> setControl(false),12000)
-  }, []);
+      t  = setTimeout(()=>{ setControl(false)},12000)
+      return ()=>{
+        clearTimeout(t);
+      }
+  }, [control]);
 
   
   const qManage = (x) => {
@@ -98,10 +102,21 @@ else{return (
           <Link href="/"><i className="bi bi-house"></i> {ch[0]?.name}</Link>
         </h6>
         <div
-          onMouseOver={() =>setControl(true)}
+          onMouseOver={() =>{
+            if(!control){
+              setControl(true)
+            }
+          }
+        }
           onMouseOut={()=>setControl(false)}
+          onClick={()=>{
+            if(!control){
+              setControl(true)
+            }
+          }
+        }
           ref={playerRef}
-          className={`${styles.rp} my-2 mx-auto w-4/4 md:w-1/2 rounded-lg overflow-hidden bg-slate-900 bg-blend-overlay shadow-2xl relative transition ease-in-out duration-3000`}
+          className={`${styles.rp} my-2 mx-auto w-4/4 md:w-1/2 md:rounded-lg overflow-hidden bg-slate-900 bg-blend-overlay shadow-2xl relative transition-all ease-in-out duration-3000`}
         >
           <ReactPlayer
             url={source}
@@ -187,12 +202,12 @@ else{return (
 
       <div className='flex w-full mt-8 gap-8 overflow-hidden overflow-x-auto snap-x'>
         {state.filter(r=>r.category==ch[0]?.category).map((r)=>
-        <div key={r.id} className={`min-w-max snap-center`} onClick={()=>setCurrentPlay(r.id)}>
-          <div className='w-full'>
-              <Image src="/images.png" className='w-4/5 mx-auto' width="80" height="100" alt={r.name}/>
+        <div key={r.id} className={`min-w-max snap-center transition-all duration-500 md:mx-10 `} onClick={()=>setCurrentPlay(r.id)}>
+          <div className='w-full overflow-hidden rounded-lg'>
+              <Image src="/images.png" className='w-4/5 mx-auto rounded-lg' width="80" height="100" alt={r.name}/>
           </div>
-          <h6 className="text-sm capitalize">{r.name.substr(0, 10)} &rarr;</h6>
-          <p>Learn about Next.js in an ..</p>
+          <h6 className="text-md capitalize">{r.name.substr(0, 13)} &rarr;</h6>
+          <p>OurTv Live Tv Channel ..</p>
         </div>)}
       </div>
     </div>

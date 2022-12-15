@@ -28,7 +28,7 @@ export default function Home() {
       <Search display={display} setDisplay={setDisplay} channel={Channe} setChannel={setChannel} defChannel={state} />
       <div className='border-b-2'></div>
       <main className={`${styles.main} dark:bg-zinc-900 dark:text-slate py-8`}>
-        <h6 className={`${styles.title} text-sm`}>
+        <h6 className={`${styles.title} text-sm my-2`}>
           Welcome to <a href="#">Our TV!</a>
         </h6>
         <p className='text-lg text-slate-400 italic'>{message}</p>
@@ -55,21 +55,6 @@ export default function Home() {
              
              )}
         </div>} */}
-        
-        
-     {/*    <div className={`grid grid-flow-col auto-cols-max m-0 w-full`}>
-          {Channe.map((r) => (
-            <Link key={r?.id} href={`channel/${r?.id}`}>
-            <div  className={`${styles.card} m-0 w-full md:w-4/5 justify-self-center `}>
-              <div className='w-full'>
-                  <Image src="/images.png" className='w-full' width="100" height="100" alt={r.name}/>
-              </div>
-              <h6 className="text-sm">{r.name.substr(0, 10)} &rarr;</h6>
-              <p>Live tv</p>
-            </div>
-          </Link>
-          ))}
-        </div> */}
         
         <div className={styles.grid}>
           {Channe?.map((r) => (

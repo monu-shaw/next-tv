@@ -54,6 +54,7 @@ const styles = {
     input: 'px-2 py-1 rounded-sm'
 }
 function AddModal(){
+    const router = useRouter()
     const {state} = useContext(AppContext)
     const [user, setUser] = useState({
         name : '',
@@ -74,7 +75,11 @@ function AddModal(){
             fetch('/api/addChannel',{
                 method:'POST',
                 body:JSON.stringify(user)
-            }).then(u=>u.json()).then(r=>console.log(r))
+            }).then(u=>u.json()).then(r=>{
+                if(r.error==null){
+                    router.push('home')
+                }
+            })
         }
     }
     const HandelChange= (e)=>{
@@ -118,7 +123,13 @@ function UpdateModal({p}){
             fetch('/api/updatechannel',{
                 method:'POST',
                 body:JSON.stringify(user)
-            }).then(u=>u.json()).then(r=>console.log(r))
+            }).then(u=>u.json()).then(r=>{
+                if(r.status === 204){
+                    alert("updated");
+                }else{
+                    alert(JSON.stringify(r));
+                }
+            })
         
     }
     const HandelChange= (e)=>{
@@ -149,7 +160,6 @@ function UpdateModal({p}){
             <input name="language" className={'form-control my-1 ' + styles.input} type="text" onChange={HandelChange} placeholder='language' value={user?.language}/>
             <input name="category" className={'form-control my-1 ' + styles.input} type="text" onChange={HandelChange} placeholder='category'value={user?.category}/>
             <button type={'submit'} className=" bg-slate-500 dark:bg-slate-900 w-1/4 mx-auto rounded-xl">Add</button>
-
         </form>
         
     )
