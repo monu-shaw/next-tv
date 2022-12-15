@@ -13,7 +13,7 @@ export default (req, res) => {
       .from('channel')
       .select('*')
       .then((re) => {
-       return res.status(200).json(re.data)
+       return res.status(200).json(re)
       }).catch((err)=>{
         return res.status(500).json({ err: err });
       });

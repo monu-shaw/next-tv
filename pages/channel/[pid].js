@@ -23,22 +23,11 @@ const Channel = () => {
   const { pid } = useRouter().query;
 
   function setCurrentPlay(x){
-    const data = state.filter((r) => r.id == x);
+    const data = state?.filter((r) => r.id == x);
     setCh(data);
     setSource(data[0]?.quality.low);
   }
 
-  function fadeControl(func, delay) {
-    let debounceTimer = null
-    setControl(true);
-    setPlaying(!playing);
-    return function() {
-        const context = this
-        const args = arguments
-            clearTimeout(debounceTimer)
-                debounceTimer = setTimeout(function(){func.apply(context, args)}, delay)
-    }
-} 
   const speedControl = (x) => {
     if (x) {
       if (speed < 2.5) {
@@ -76,21 +65,8 @@ const Channel = () => {
     toggleFullscreen();
   }, [fullscreen]);
   useEffect(() => {
-    function toggleFullscreen() {
-      if (fullscreen) {
-        playerRef.current.requestFullscreen();
-      } else {
-        if (document.fullscreenElement) {
-          document
-            .exitFullscreen()
-            .then(() => {})
-            .catch((err) => console.error(err));
-        } 
-        
-      }
-    }
-    toggleFullscreen();
-  }, [control]);
+      setTimeout(()=> setControl(false),12000)
+  }, []);
 
   
   const qManage = (x) => {
@@ -122,11 +98,8 @@ else{return (
           <Link href="/"><i className="bi bi-house"></i> {ch[0]?.name}</Link>
         </h6>
         <div
-          onClick={() => 
-            fadeControl(function(){
-              setControl(false);
-              console.log('r');
-            },5000)()}
+          onMouseOver={() =>setControl(true)}
+          onMouseOut={()=>setControl(false)}
           ref={playerRef}
           className={`${styles.rp} my-2 mx-auto w-4/4 md:w-1/2 rounded-lg overflow-hidden bg-slate-900 bg-blend-overlay shadow-2xl relative transition ease-in-out duration-3000`}
         >
@@ -139,7 +112,7 @@ else{return (
             playbackRate={speed}
             
           />
-          <div className={`${control?'':'hidden'}`}>
+          <div className={`transition-all duration-500 ${control?'':'translate-y-40'}`}>
             <button
               className="transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300 absolute left-2 bottom-2 rounded-2xl p-1  px-2"
               onClick={() => setPlaying(!playing)}
@@ -171,9 +144,10 @@ else{return (
               )}
             </button>
             <div
-              className={`grid absolute right-2 top-2 modal p-2 rounded-2xl backdrop-blur-xl bg-white/30 ${
-                !option ? 'hidden' : ''
+              className={`transition-all duration-300 grid absolute right-2 top-2 modal p-2 rounded-2xl backdrop-blur-xl bg-white/30 ${
+                option ? '' : 'translate-x-40'
               }`}
+
             >
               <div id="spdCntrl" className="grid grid-cols-3  content-between">
                 <div className="justify-self-center" onClick={() => speedControl(1)}>

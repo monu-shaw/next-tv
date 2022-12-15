@@ -7,7 +7,7 @@ import Image from 'next/image';
 import Search from './components/search';
 
 export default function Home() {
-  const {state} = useContext(AppContext);
+  const {state, message} = useContext(AppContext);
   const [category, setCategory] = useState([]);
   
   const [Channe, setChannel] = useState(state);
@@ -31,6 +31,7 @@ export default function Home() {
         <h6 className={`${styles.title} text-sm`}>
           Welcome to <a href="#">Our TV!</a>
         </h6>
+        <p className='text-lg text-slate-400 italic'>{message}</p>
 
         {/* {<div className='overflow-hidden max-w-full'>
           {category.map(i=>
@@ -71,13 +72,13 @@ export default function Home() {
         </div> */}
         
         <div className={styles.grid}>
-          {Channe.map((r) => (
+          {Channe?.map((r) => (
             <Link key={r.id} href={`channel/${r.id}`} className={styles.card}>
               <div className='w-full'>
                   <Image src="/images.png" className='w-full' width="100" height="100" alt={r.name}/>
               </div>
-              <h6 className="text-sm capitalize">{r.name.substr(0, 10)} &rarr;</h6>
-              <p>Learn about Next.js in an ..</p>
+              <h6 className="text-sm capitalize">{r.name.substr(0, 13)} &rarr;</h6>
+              <p>Live Tv Channels</p>
             </Link>
           ))}
         </div>
