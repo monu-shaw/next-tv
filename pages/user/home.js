@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useState } from 'react'
-import supabase from '../components/supabase';
+import { supabase } from '../components/supabase';
+
 import { AppContext } from '../_app';
 
 function Home() {

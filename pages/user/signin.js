@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react'
-import supabase from '../components/supabase';
+import { supabase } from '../components/supabase';
+
 
 
 
