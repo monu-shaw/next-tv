@@ -1,6 +1,11 @@
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react'
-import { supabase } from '../components/supabase';
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.clientID,
+  process.env.clientKEY
+);
 
 
 

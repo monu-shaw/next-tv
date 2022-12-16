@@ -1,8 +1,14 @@
 import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useState } from 'react'
-import { supabase } from '../components/supabase';
+
 
 import { AppContext } from '../_app';
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.clientID,
+  process.env.clientKEY
+);
 
 function Home() {
     const router = useRouter()
