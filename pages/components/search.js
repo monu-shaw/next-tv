@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 
 function Search(props) {
@@ -34,7 +35,7 @@ function Search(props) {
     <>
     {!props.display?(<i className="bi bi-search p-2 text-3xl text-csky" onClick={()=>{props.setDisplay(!props.display)}}></i>):(<p className={`absolute top-0 right-0 p-2`} onClick={()=>{props.setDisplay(!props.display)}}>.</p>)}
     <i className={`bi p-2 text-3xl transition-all duration-1000 bi-gear-fill ${Filter?'translate-x-10':''}`} onClick={()=>{setFiltr(!Filter)}}></i>
-    
+    <Link href={`/user/home`}><i className='bi bi-person text-3xl'></i></Link>
     <div className={`my-2 self-center flex justify-center gap-2 ${Filter?'':'hidden'}`}>
       <select className={`capitalize px-2 bg-transparent/20`} onChange={(e)=>setLang(e.target.value)}>
       <option value="1">language</option>
