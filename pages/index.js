@@ -27,8 +27,8 @@ export default function Home() {
       </Head>
       <Search display={display} setDisplay={setDisplay} channel={Channe} setChannel={setChannel} defChannel={state} />
       <div className='border-b-2'></div>
-      <main className={`${styles.main} dark:bg-zinc-900 dark:text-slate py-8`}>
-        <h6 className={`${styles.title} text-sm my-2`}>
+      <main className={`${styles.main} dark:bg-zinc-900 dark:text-slate `}>
+        <h6 className={`${styles.title} text-sm`}>
           Welcome to <a href="#">Our TV!</a>
         </h6>
         <p className='text-lg text-slate-400 italic'>{message}</p>
