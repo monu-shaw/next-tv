@@ -6,8 +6,8 @@ import { AppContext } from '../_app';
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
-  process.env.clientID,
-  process.env.clientKEY
+  process.env.NEXT_PUBLIC_clientID,
+  process.env.NEXT_PUBLIC_clientKEY
 );
 
 function Home() {
